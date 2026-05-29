@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maddiveni Akhil Ram Prasad | System Core</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #02040a;
+            --card-bg: rgba(10, 14, 23, 0.7);
+            --border-color: rgba(255, 255, 255, 0.05);
+            --accent-cyan: #00f0ff;
+            --accent-purple: #8a2be2;
+            --text-main: #f8fafc;
+            --text-muted: #8b949e;
+        }
+
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            cursor: crosshair;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Grid Background */
+        .cyber-grid {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -2;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 40px; }
+        }
+
+        /* --- BENTO GRID --- */
+        .bento-grid {
+            max-width: 1250px; width: 100%;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: minmax(160px, auto);
+            gap: 24px;
+            z-index: 1;
+        }
+
+        /* Dynamic Holographic Cards */
+        .bento-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 32px;
+            position: relative;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        /* Mouse tracking glow effect */
+        .bento-card::before {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(0, 240, 255, 0.06), transparent 40%);
+            z-index: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+
+        .bento-card::after {
+            content: ""; position: absolute; inset: 0;
+            border-radius: 24px; padding: 2px;
+            background: radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), rgba(0, 240, 255, 0.4), transparent 40%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            z-index: 1; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+        }
+
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .bento-card:hover::before, .bento-card:hover::after { opacity: 1; }
+
+        .card-content { position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; }
+
+        /* Grid Spans */
+        .card-hero { grid-column: span 2; grid-row: span 2; }
+        .card-terminal { grid-column: span 2; grid-row: span 2; background: #05070a; }
+        .card-projects { grid-column: span 2; grid-row: span 2; }
+        .card-skills { grid-column: span 1; grid-row: span 2; }
+        .card-status { grid-column: span 1; grid-row: span 2; }
+
+        /* --- HERO --- */
+        .hero-top { display: flex; align-items: center; gap: 25px; margin-bottom: 25px; }
+        .avatar {
+            width: 110px; height: 110px; border-radius: 22px; object-fit: cover;
+            border: 2px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+        }
+        .hero-title h1 { font-size: 2.4em; line-height: 1.1; margin-bottom: 5px; color: #fff; }
+        .hero-title h2 { font-size: 1.05em; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono', monospace; }
+        
+        .social-dock { display: flex; gap: 12px; margin-top: auto; }
+        .social-btn {
+            background: rgba(255,255,255,0.03); border: 1px solid var(--border-color);
+            width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            color: var(--text-main); text-decoration: none; transition: 0.3s; font-size: 1.3em;
+        }
+        .social-btn:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px var(--accent-cyan); }
+
+        /* --- TERMINAL (Upgraded) --- */
+        .terminal-header { display: flex; gap: 8px; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .term-dot.r { background: #ff5f56; } .term-dot.y { background: #ffbd2e; } .term-dot.g { background: #27c93f; }
+        
+        .term-body { font-family: 'JetBrains Mono', monospace; font-size: 0.95em; height: 210px; overflow-y: auto; color: #a9b7c6; scrollbar-width: none; }
+        .term-body::-webkit-scrollbar { display: none; }
+        .term-line { margin-bottom: 8px; line-height: 1.4; }
+        .term-prompt { color: var(--accent-cyan); }
+        .term-dir { color: var(--accent-purple); }
+        
+        .term-input-line { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+        .term-input {
+            background: transparent; border: none; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 1em; outline: none; width: 100%; text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        /* --- PROJECTS --- */
+        .section-title { font-size: 1.3em; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .section-title i { color: var(--accent-cyan); }
+        
+        .project-item { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px dashed var(--border-color); }
+        .project-item:last-child { border: none; margin: 0; padding: 0; }
+        .project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .project-header h3 { font-size: 1.2em; color: #fff; }
+        .project-header span { font-size: 0.8em; color: #000; font-weight: bold; background: var(--accent-cyan); padding: 4px 12px; border-radius: 4px; font-family: 'JetBrains Mono'; }
+        .project-item p { font-size: 0.95em; color: var(--text-muted); line-height: 1.6; }
+
+        /* --- SKILLS --- */
+        .tag-list { display: flex; flex-direction: column; gap: 12px; }
+        .tag {
+            background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.15);
+            padding: 12px 16px; border-radius: 12px; font-size: 0.9em;
+            display: flex; align-items: center; gap: 12px; color: #fff;
+            transition: 0.3s;
+        }
+        .tag:hover { background: rgba(0, 240, 255, 0.1); transform: translateX(5px); }
+        .tag i { color: var(--accent-purple); font-size: 1.1em; }
+
+        /* --- SYSTEM STATUS CARD --- */
+        .status-box { display: flex; flex-direction: column; gap: 15px; }
+        .status-item { background: rgba(0,0,0,0.3); padding: 15px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .status-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-family: 'JetBrains Mono'; font-size: 0.85em; color: var(--accent-cyan); }
+        .led { width: 8px; height: 8px; background: #27c93f; border-radius: 50%; box-shadow: 0 0 10px #27c93f; animation: blink 2s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        
+        .code-snippet { font-family: 'JetBrains Mono'; color: #fff; font-size: 0.85em; line-height: 1.5; }
+        .highlight-text { color: var(--accent-purple); }
+
+        @media (max-width: 950px) {
+            .bento-grid { grid-template-columns: 1fr; }
+            .card-hero, .card-terminal, .card-projects, .card-skills, .card-status { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="cyber-grid"></div>
+
+    <div class="bento-grid">
+        
+        <div class="bento-card card-hero">
+            <div class="card-content">
+                <div class="hero-top">
+                    <img src="napfp.jpg" alt="Akhil Ram Prasad" class="avatar">
+                    <div class="hero-title">
+                        <h1>Akhil Ram Prasad</h1>
+                        <h2>AI Security & Systems Engineer</h2>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 1.1em; margin-bottom: 25px; line-height: 1.7;">
+                    Final-year Computer Science Engineering student engineering localized machine learning, open-source AI defense, and highly optimized legacy hardware networks. Expected Graduation: 2026.
+                </p>
+                <div class="social-dock">
+                    <a href="mailto:akhilramprasadmaddiveni@gmail.com" class="social-btn" title="Email"><i class="fas fa-envelope"></i></a>
+                    <a href="https://linkedin.com/in/mad-arp" target="_blank" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://github.com/mad-arp" target="_blank" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="tel:6303083004" class="social-btn" title="Call"><i class="fas fa-phone"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card card-terminal" onclick="document.getElementById('cmd-input').focus()">
+            <div class="card-content">
+                <div class="terminal-header">
+                    <div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div>
+                </div>
+                <div class="term-body" id="term-output"></div>
+                <div class="term-input-line" id="input-container" style="display:none;">
+                    <span class="term-prompt">root@veritas</span>:<span class="term-dir">/sys/core</span>$ 
+                    <input type="text" class="term-input" id="cmd-input" autocomplete="off" spellcheck="false">
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card card-projects">
+            <div class="card-content">
+                <div class="section-title"><i class="fas fa-shield-halved"></i> Threat Mitigation Systems</div>
+                
+                <div class="project-item">
+                    <div class="project-header">
+                        <h3>Veritas Protocol Engine</h3>
+                        <span>Lead Researcher</span>
+                    </div>
+                    <p>Local-first ML framework intercepting synthetic audio artifacts. Engineered with zero cloud dependency to ensure strict biometric data privacy.</p>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-header">
+                        <h3>Q-SHIELD</h3>
+                        <span>Full-Stack Dev</span>
+                    </div>
+                    <p>Comprehensive cybersecurity web application for local network vulnerability management. Designed full backend threat-logic architecture.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card card-skills">
+            <div class="card-content">
+                <div class="section-title"><i class="fas fa-code"></i> Technical Stack</div>
+                <div class="tag-list">
+                    <div class="tag"><i class="fas fa-wave-square"></i> Synthetic Media Def.</div>
+                    <div class="tag"><i class="fas fa-network-wired"></i> Nmap / Wireshark</div>
+                    <div class="tag"><i class="fas fa-server"></i> Bare-Metal Linux OS</div>
+                    <div class="tag"><i class="fas fa-laptop-code"></i> AI Dev (Claude/Lovable)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bento-card card-status">
+            <div class="card-content">
+                <div class="section-title"><i class="fas fa-microchip"></i> Hardware Diagnostics</div>
+                <div class="status-box">
+                    <div class="status-item">
+                        <div class="status-header"><span>BARE_METAL.OS</span> <div class="led"></div></div>
+                        <div class="code-snippet">Deploying <span class="highlight-text">antiX / Xubuntu</span><br>Optimizing legacy network isolations.</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-header"><span>SYS_CONFIG</span> <div class="led"></div></div>
+                        <div class="code-snippet">Compiling <span class="highlight-text">bcmwl-kernel</span><br>Mapping <span class="highlight-text">VGA-1</span><br>Display: <span class="highlight-text">HD154032C20</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Holographic Glow Effect
+        document.querySelectorAll('.bento-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Advanced Terminal Boot Sequence
+        const output = document.getElementById('term-output');
+        const inputContainer = document.getElementById('input-container');
+        const input = document.getElementById('cmd-input');
+
+        const bootSequence = [
+            "Initializing secure boot...",
+            "Loading Linux kernel [antiX-core]...",
+            "Mounting local encrypted drives... [OK]",
+            "Establishing zero-cloud audio intercept... [OK]",
+            "Loading Web Audio API modules... [OK]",
+            "Veritas Protocol Engine v2.4 initialized.",
+            "Type 'help' to view available commands."
+        ];
+
+        let bootIndex = 0;
+
+        function runBootSequence() {
+            if (bootIndex < bootSequence.length) {
+                const line = document.createElement('div');
+                line.className = 'term-line';
+                line.style.color = bootIndex === bootSequence.length - 1 ? '#00f0ff' : '#a9b7c6';
+                line.innerText = bootSequence[bootIndex];
+                output.appendChild(line);
+                bootIndex++;
+                output.scrollTop = output.scrollHeight;
+                setTimeout(runBootSequence, Math.random() * 300 + 100);
+            } else {
+                output.appendChild(document.createElement('br'));
+                inputContainer.style.display = 'flex';
+                input.focus();
+            }
+        }
+
+        // Start boot sequence on load
+        setTimeout(runBootSequence, 500);
+
+        // Terminal Commands
+        input.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const cmd = input.value.trim().toLowerCase();
+                input.value = '';
+
+                const echoLine = document.createElement('div');
+                echoLine.className = 'term-line';
+                echoLine.innerHTML = `<span class="term-prompt">root@veritas</span>:<span class="term-dir">/sys/core</span>$ ${cmd}`;
+                output.appendChild(echoLine);
+
+                const responseLine = document.createElement('div');
+                responseLine.className = 'term-line';
+                responseLine.style.color = '#fff';
+                
+                switch(cmd) {
+                    case 'help':
+                        responseLine.innerHTML = "<span style='color:#00f0ff'>Available commands:</span><br>  whoami  - Display profile identity<br>  sys     - View hardware optimization specs<br>  clear   - Clear terminal output";
+                        break;
+                    case 'whoami':
+                        responseLine.innerHTML = "Maddiveni Akhil Ram Prasad.<br>Classification: AI Security & Systems Engineer.<br>Objective: Countering synthetic media threats.";
+                        break;
+                    case 'sys':
+                        responseLine.innerHTML = "Executing bare-metal diagnostics...<br>[OK] OEM display HD154032C20 matched.<br>[OK] bcmwl-kernel-source compiled.<br>[OK] VGA-1 routing active.";
+                        break;
+                    case 'clear':
+                        output.innerHTML = '';
+                        return;
+                    case '':
+                        return;
+                    default:
+                        responseLine.style.color = '#ff5f56';
+                        responseLine.innerHTML = `bash: ${cmd}: command not found. Type 'help' for options.`;
+                }
+
+                output.appendChild(responseLine);
+                output.appendChild(document.createElement('br'));
+                output.scrollTop = output.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
